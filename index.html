@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Excel to API - Upload File</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📊 Excel to API</h1>
+      <p>Upload your Excel file to store data and access it via API</p>
+      <div style="margin-top: 20px;">
+        <a href="api-test.html" class="btn btn-secondary" style="display: inline-block; text-decoration: none; background: white; color: #2563eb; border: 2px solid white;">
+          🔌 Test API Endpoints →
+        </a>
+      </div>
+    </header>
+
+    <main>
+      <!-- Upload Section -->
+      <section class="upload-section">
+        <div class="card">
+          <h2>Upload Excel File</h2>
+          <form id="upload-form" enctype="multipart/form-data">
+            <div class="file-input-wrapper">
+              <input 
+                type="file" 
+                id="excel-file" 
+                name="file" 
+                accept=".xls,.xlsx"
+                required
+              >
+              <label for="excel-file" class="file-label">
+                <span class="file-icon">📁</span>
+                <span id="file-name">Choose Excel file (.xls, .xlsx)</span>
+              </label>
+            </div>
+            <button type="submit" class="btn btn-primary" id="upload-btn">
+              <span class="btn-text">Upload File</span>
+              <span class="loader" style="display: none;"></span>
+            </button>
+          </form>
+          
+          <div id="upload-result" class="result-message" style="display: none;"></div>
+        </div>
+      </section>
+
+      <!-- Statistics Section -->
+      <section class="stats-section">
+        <div class="card">
+          <h2>Database Statistics</h2>
+          <div class="stats-grid">
+            <div class="stat-item">
+              <div class="stat-value" id="total-records">-</div>
+              <div class="stat-label">Total Records</div>
+            </div>
+            <div class="stat-item">
+              <div class="stat-value" id="latest-upload">-</div>
+              <div class="stat-label">Latest Upload</div>
+            </div>
+          </div>
+          <button class="btn btn-secondary" id="refresh-stats">Refresh Stats</button>
+        </div>
+      </section>
+
+      <!-- API Documentation Section -->
+      <!-- <section class="api-section">
+        <div class="card">
+          <h2>API Endpoints</h2>
+          <div class="api-endpoints">
+            <div class="endpoint">
+              <span class="method get">GET</span>
+              <code>/api/data</code>
+              <p>Fetch all data (supports pagination with ?page=1&limit=100)</p>
+            </div>
+            <div class="endpoint">
+              <span class="method get">GET</span>
+              <code>/api/data/:id</code>
+              <p>Fetch specific record by ID</p>
+            </div>
+            <div class="endpoint">
+              <span class="method get">GET</span>
+              <code>/api/stats</code>
+              <p>Get database statistics</p>
+            </div>
+            <div class="endpoint">
+              <span class="method post">POST</span>
+              <code>/api/upload</code>
+              <p>Upload Excel file (multipart/form-data)</p>
+            </div>
+            <div class="endpoint">
+              <span class="method delete">DELETE</span>
+              <code>/api/data</code>
+              <p>Delete all data (use with caution)</p>
+            </div>
+          </div>
+          
+          <div class="api-example">
+            <h3>Example: Fetch Data</h3>
+            <pre><code>fetch('http://localhost:3000/api/data')
+  .then(response => response.json())
+  .then(data => console.log(data));</code></pre>
+          </div>
+        </div>
+      </section> -->
+
+      <!-- Data Preview Section -->
+      <section class="preview-section">
+        <div class="card">
+          <h2>Data Preview</h2>
+          <button class="btn btn-secondary" id="load-data">Load Data</button>
+          <div id="data-container" style="display: none;">
+            <div class="table-controls">
+              <button class="btn btn-small" id="prev-page">← Previous</button>
+              <span id="page-info">Page 1</span>
+              <button class="btn btn-small" id="next-page">Next →</button>
+            </div>
+            <div class="table-wrapper">
+              <table id="data-table">
+                <thead id="table-head"></thead>
+                <tbody id="table-body"></tbody>
+              </table>
+            </div>
+          </div>
+          <div id="no-data" style="display: none;" class="no-data">
+            No data available. Upload an Excel file to get started.
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Excel to API System - Built with Node.js, Express, and MongoDB</p>
+    </footer>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

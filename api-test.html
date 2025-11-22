@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Testing - Excel to API</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .api-test-section {
+      margin: 20px 0;
+    }
+    .test-button {
+      margin: 10px 5px;
+    }
+    .response-box {
+      background: #1e293b;
+      color: #e2e8f0;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 15px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+      max-height: 500px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+    .endpoint-url {
+      background: #f1f5f9;
+      padding: 12px;
+      border-radius: 6px;
+      margin: 10px 0;
+      font-family: monospace;
+      word-break: break-all;
+    }
+    .copy-btn {
+      background: #10b981;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.875rem;
+      margin-left: 10px;
+    }
+    .copy-btn:hover {
+      background: #059669;
+    }
+    .filter-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin: 15px 0;
+    }
+    .filter-group input, .filter-group select {
+      padding: 8px 12px;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      font-size: 0.875rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>🔌 API Testing Console</h1>
+      <p>Test your Excel to API endpoints and see live responses</p>
+    </header>
+
+    <main>
+      <!-- Quick Links -->
+      <section class="upload-section">
+        <div class="card">
+          <h2>📌 Quick Access</h2>
+          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+            <a href="/" class="btn btn-secondary">← Back to Upload</a>
+            <button class="btn btn-secondary" onclick="window.location.reload()">🔄 Refresh</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Get All Data -->
+      <section class="api-test-section">
+        <div class="card">
+          <h2>1. Get All Data</h2>
+          <p>Fetch all records from the database</p>
+          <div class="endpoint-url">
+            <strong>GET</strong> <span id="url-all-data"></span>
+            <button class="copy-btn" onclick="copyToClipboard('url-all-data')">📋 Copy</button>
+          </div>
+          <button class="btn btn-primary test-button" onclick="getAllData()">🚀 Test Endpoint</button>
+          <div id="response-all-data" class="response-box" style="display: none;"></div>
+        </div>
+      </section>
+
+      <!-- Get Data with Pagination -->
+      <section class="api-test-section">
+        <div class="card">
+          <h2>2. Get Data with Pagination</h2>
+          <p>Fetch data with custom page and limit</p>
+          <div class="filter-group">
+            <label>
+              Page: <input type="number" id="page" value="1" min="1" style="width: 80px;">
+            </label>
+            <label>
+              Limit: <input type="number" id="limit" value="10" min="1" max="100" style="width: 80px;">
+            </label>
+          </div>
+          <div class="endpoint-url">
+            <strong>GET</strong> <span id="url-pagination"></span>
+            <button class="copy-btn" onclick="copyToClipboard('url-pagination')">📋 Copy</button>
+          </div>
+          <button class="btn btn-primary test-button" onclick="getDataPagination()">🚀 Test Endpoint</button>
+          <div id="response-pagination" class="response-box" style="display: none;"></div>
+        </div>
+      </section>
+
+      <!-- Filter by District -->
+      <section class="api-test-section">
+        <div class="card">
+          <h2>3. Filter by District</h2>
+          <p>Get data for a specific district</p>
+          <div class="filter-group">
+            <label>
+              District: <input type="text" id="filter-district" placeholder="e.g., Mumbai" style="width: 200px;">
+            </label>
+          </div>
+          <div class="endpoint-url">
+            <strong>GET</strong> <span id="url-district"></span>
+            <button class="copy-btn" onclick="copyToClipboard('url-district')">📋 Copy</button>
+          </div>
+          <button class="btn btn-primary test-button" onclick="filterByDistrict()">🚀 Test Endpoint</button>
+          <div id="response-district" class="response-box" style="display: none;"></div>
+        </div>
+      </section>
+
+      <!-- Filter by Status -->
+      <section class="api-test-section">
+        <div class="card">
+          <h2>4. Filter by Status</h2>
+          <p>Get data by application status</p>
+          <div class="filter-group">
+            <label>
+              Status:
+              <select id="filter-status" style="width: 150px;">
+                <option value="">Select Status</option>
+                <option value="Approved">Approved</option>
+                <option value="Pending">Pending</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </label>
+          </div>
+          <div class="endpoint-url">
+            <strong>GET</strong> <span id="url-status"></span>
+            <button class="copy-btn" onclick="copyToClipboard('url-status')">📋 Copy</button>
+          </div>
+          <button class="btn btn-primary test-button" onclick="filterByStatus()">🚀 Test Endpoint</button>
+          <div id="response-status" class="response-box" style="display: none;"></div>
+        </div>
+      </section>
+
+      <!-- Search -->
+      <section class="api-test-section">
+        <div class="card">
+          <h2>5. Search Records</h2>
+          <p>Search by name, mobile, email, or Aadhaar number</p>
+          <div class="filter-group">
+            <label>
+              Search: <input type="text" id="search-query" placeholder="Name, mobile, email, or Aadhaar" style="width: 300px;">
+            </label>
+          </div>
+          <div class="endpoint-url">
+            <strong>GET</strong> <span id="url-search"></span>
+            <button class="copy-btn" onclick="copyToClipboard('url-search')">📋 Copy</button>
+          </div>
+          <button class="btn btn-primary test-button" onclick="searchData()">🚀 Test Endpoint</button>
+          <div id="response-search" class="response-box" style="display: none;"></div>
+        </div>
+      </section>
+
+      <!-- Multiple Filters -->
+      <section class="api-test-section">
+        <div class="card">
+          <h2>6. Combined Filters</h2>
+          <p>Use multiple filters together</p>
+          <div class="filter-group">
+            <label>
+              District: <input type="text" id="multi-district" placeholder="e.g., Mumbai" style="width: 150px;">
+            </label>
+            <label>
+              Status:
+              <select id="multi-status" style="width: 120px;">
+                <option value="">Any</option>
+                <option value="Approved">Approved</option>
+                <option value="Pending">Pending</option>
+                <option value="Rejected">Rejected</option>
+              </select>
+            </label>
+            <label>
+              Year: <input type="number" id="multi-year" placeholder="e.g., 2025" style="width: 100px;">
+            </label>
+            <label>
+              Gender:
+              <select id="multi-gender" style="width: 100px;">
+                <option value="">Any</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+            </label>
+          </div>
+          <div class="endpoint-url">
+            <strong>GET</strong> <span id="url-multi"></span>
+            <button class="copy-btn" onclick="copyToClipboard('url-multi')">📋 Copy</button>
+          </div>
+          <button class="btn btn-primary test-button" onclick="multiFilter()">🚀 Test Endpoint</button>
+          <div id="response-multi" class="response-box" style="display: none;"></div>
+        </div>
+      </section>
+
+      <!-- Get Statistics -->
+      <section class="api-test-section">
+        <div class="card">
+          <h2>7. Get Statistics</h2>
+          <p>Get database statistics and upload info</p>
+          <div class="endpoint-url">
+            <strong>GET</strong> <span id="url-stats"></span>
+            <button class="copy-btn" onclick="copyToClipboard('url-stats')">📋 Copy</button>
+          </div>
+          <button class="btn btn-primary test-button" onclick="getStats()">🚀 Test Endpoint</button>
+          <div id="response-stats" class="response-box" style="display: none;"></div>
+        </div>
+      </section>
+
+      <!-- Code Examples -->
+      <section class="api-test-section">
+        <div class="card">
+          <h2>💻 Code Examples</h2>
+          
+          <h3>JavaScript (Fetch API)</h3>
+          <pre class="response-box" style="display: block;"><code>// Get all data
+fetch('${window.location.origin}/api/data')
+  .then(response => response.json())
+  .then(data => {
+    console.log('Total Records:', data.totalRecords);
+    console.log('Data:', data.data);
+  });
+
+// Filter by district
+fetch('${window.location.origin}/api/data?district=Mumbai')
+  .then(response => response.json())
+  .then(data => console.log(data));
+
+// Multiple filters
+fetch('${window.location.origin}/api/data?district=Mumbai&status=Approved&year=2025')
+  .then(response => response.json())
+  .then(data => console.log(data));</code></pre>
+
+          <h3>JavaScript (Axios)</h3>
+          <pre class="response-box" style="display: block;"><code>const axios = require('axios');
+
+// Get all data
+const response = await axios.get('${window.location.origin}/api/data');
+console.log(response.data);
+
+// With filters
+const filtered = await axios.get('${window.location.origin}/api/data', {
+  params: {
+    district: 'Mumbai',
+    status: 'Approved',
+    page: 1,
+    limit: 50
+  }
+});
+console.log(filtered.data);</code></pre>
+
+          <h3>Python (Requests)</h3>
+          <pre class="response-box" style="display: block;"><code>import requests
+
+# Get all data
+response = requests.get('${window.location.origin}/api/data')
+data = response.json()
+print(f"Total Records: {data['totalRecords']}")
+
+# With filters
+params = {
+    'district': 'Mumbai',
+    'status': 'Approved',
+    'year': 2025
+}
+filtered = requests.get('${window.location.origin}/api/data', params=params)
+print(filtered.json())</code></pre>
+
+          <h3>cURL</h3>
+          <pre class="response-box" style="display: block;"><code># Get all data
+curl "${window.location.origin}/api/data"
+
+# With filters
+curl "${window.location.origin}/api/data?district=Mumbai&status=Approved"
+
+# Get statistics
+curl "${window.location.origin}/api/stats"</code></pre>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <p>Excel to API System - API Testing Console</p>
+    </footer>
+  </div>
+
+  <script>
+    const API_BASE = window.location.origin;
+
+    // Update URLs on page load
+    window.onload = function() {
+      updateAllUrls();
+    };
+
+    function updateAllUrls() {
+      document.getElementById('url-all-data').textContent = `${API_BASE}/api/data`;
+      updatePaginationUrl();
+      updateDistrictUrl();
+      updateStatusUrl();
+      updateSearchUrl();
+      updateMultiUrl();
+      document.getElementById('url-stats').textContent = `${API_BASE}/api/stats`;
+    }
+
+    function updatePaginationUrl() {
+      const page = document.getElementById('page').value;
+      const limit = document.getElementById('limit').value;
+      document.getElementById('url-pagination').textContent = `${API_BASE}/api/data?page=${page}&limit=${limit}`;
+    }
+
+    function updateDistrictUrl() {
+      const district = document.getElementById('filter-district').value || '{district}';
+      document.getElementById('url-district').textContent = `${API_BASE}/api/data?district=${district}`;
+    }
+
+    function updateStatusUrl() {
+      const status = document.getElementById('filter-status').value || '{status}';
+      document.getElementById('url-status').textContent = `${API_BASE}/api/data?status=${status}`;
+    }
+
+    function updateSearchUrl() {
+      const search = document.getElementById('search-query').value || '{search_term}';
+      document.getElementById('url-search').textContent = `${API_BASE}/api/data?search=${encodeURIComponent(search)}`;
+    }
+
+    function updateMultiUrl() {
+      const params = [];
+      const district = document.getElementById('multi-district').value;
+      const status = document.getElementById('multi-status').value;
+      const year = document.getElementById('multi-year').value;
+      const gender = document.getElementById('multi-gender').value;
+      
+      if (district) params.push(`district=${district}`);
+      if (status) params.push(`status=${status}`);
+      if (year) params.push(`year=${year}`);
+      if (gender) params.push(`gender=${gender}`);
+      
+      const queryString = params.length > 0 ? '?' + params.join('&') : '';
+      document.getElementById('url-multi').textContent = `${API_BASE}/api/data${queryString}`;
+    }
+
+    // Event listeners for URL updates
+    document.getElementById('page').addEventListener('input', updatePaginationUrl);
+    document.getElementById('limit').addEventListener('input', updatePaginationUrl);
+    document.getElementById('filter-district').addEventListener('input', updateDistrictUrl);
+    document.getElementById('filter-status').addEventListener('change', updateStatusUrl);
+    document.getElementById('search-query').addEventListener('input', updateSearchUrl);
+    document.getElementById('multi-district').addEventListener('input', updateMultiUrl);
+    document.getElementById('multi-status').addEventListener('change', updateMultiUrl);
+    document.getElementById('multi-year').addEventListener('input', updateMultiUrl);
+    document.getElementById('multi-gender').addEventListener('change', updateMultiUrl);
+
+    async function getAllData() {
+      await testEndpoint(`${API_BASE}/api/data`, 'response-all-data');
+    }
+
+    async function getDataPagination() {
+      const page = document.getElementById('page').value;
+      const limit = document.getElementById('limit').value;
+      await testEndpoint(`${API_BASE}/api/data?page=${page}&limit=${limit}`, 'response-pagination');
+    }
+
+    async function filterByDistrict() {
+      const district = document.getElementById('filter-district').value;
+      if (!district) {
+        alert('Please enter a district name');
+        return;
+      }
+      await testEndpoint(`${API_BASE}/api/data?district=${encodeURIComponent(district)}`, 'response-district');
+    }
+
+    async function filterByStatus() {
+      const status = document.getElementById('filter-status').value;
+      if (!status) {
+        alert('Please select a status');
+        return;
+      }
+      await testEndpoint(`${API_BASE}/api/data?status=${status}`, 'response-status');
+    }
+
+    async function searchData() {
+      const query = document.getElementById('search-query').value;
+      if (!query) {
+        alert('Please enter a search term');
+        return;
+      }
+      await testEndpoint(`${API_BASE}/api/data?search=${encodeURIComponent(query)}`, 'response-search');
+    }
+
+    async function multiFilter() {
+      const params = [];
+      const district = document.getElementById('multi-district').value;
+      const status = document.getElementById('multi-status').value;
+      const year = document.getElementById('multi-year').value;
+      const gender = document.getElementById('multi-gender').value;
+      
+      if (district) params.push(`district=${encodeURIComponent(district)}`);
+      if (status) params.push(`status=${status}`);
+      if (year) params.push(`year=${year}`);
+      if (gender) params.push(`gender=${gender}`);
+      
+      if (params.length === 0) {
+        alert('Please enter at least one filter');
+        return;
+      }
+      
+      const queryString = params.join('&');
+      await testEndpoint(`${API_BASE}/api/data?${queryString}`, 'response-multi');
+    }
+
+    async function getStats() {
+      await testEndpoint(`${API_BASE}/api/stats`, 'response-stats');
+    }
+
+    async function testEndpoint(url, responseId) {
+      const responseBox = document.getElementById(responseId);
+      responseBox.style.display = 'block';
+      responseBox.textContent = 'Loading...';
+
+      try {
+        const response = await fetch(url);
+        const data = await response.json();
+        responseBox.textContent = JSON.stringify(data, null, 2);
+      } catch (error) {
+        responseBox.textContent = `Error: ${error.message}`;
+      }
+    }
+
+    function copyToClipboard(elementId) {
+      const text = document.getElementById(elementId).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('URL copied to clipboard!');
+      });
+    }
+  </script>
+</body>
+</html>
