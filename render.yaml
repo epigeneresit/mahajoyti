@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: excel-api
+    env: node
+    buildCommand: npm install
+    startCommand: npm run prod
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: MONGODB_URI
+        sync: false
